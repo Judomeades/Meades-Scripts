@@ -20,7 +20,6 @@ if [ "$Used" -lt "1000" ]; then
 fi
 
 #look forauthentication failures
-#grep "New connection" /var/log/messages >> rootcause.txt
 grep "Authentication failed" /var/log/messages >> rootcause.txt
 
 
