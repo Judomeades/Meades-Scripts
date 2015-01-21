@@ -16,12 +16,23 @@ grep invoked /var/log/messages >> rootcause.txt
 #Check to see if there is less than 1GB less in RAM
 Used="$(free -m | grep Mem | awk '{print $4}';)"
 if [ "$Used" -lt "1000" ]; then
-        echo $Used >> rootcause.txt
+        echo "Available memory is: $Used" >> rootcause.txt
 fi
 
 #look forauthentication failures
-grep "New connection" /var/log/messages >> rootcause.txt
+#grep "New connection" /var/log/messages >> rootcause.txt
 grep "Authentication failed" /var/log/messages >> rootcause.txt
 
 
 #Run status
+if [[ -n $(service mysql status | grep SUCCESS) ]]; then
+        echo "mysql is fine" >> rootcause.txt
+else
+        echo "mysql is either not installed or off" >> rootcause.txt
+fi
+
+if [[ -n $(service httpd status | grep uptime) ]]; then
+        echo "httpd is fine" >> rootcause.txt
+else
+        echo "Httpd is either not installed or off" >> rootcause.txt
+fi
