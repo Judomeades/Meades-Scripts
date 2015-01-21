@@ -1,9 +1,17 @@
 #!/bin/bash
 # Created by Judomeades and networkant
 # Root cause all in one
-OS=$(cat /etc/*-release);
+
 date=`date +'%Y%m%d'`
 file=$date"rootcause.log"
+
+#Determine OS ( redhat = 0; debian/other = 1)
+if [[ -n $(cat /etc/*-release | grep "ent") ]]; then
+	os=0
+else
+	os=1
+fi
+
 #If disk space is greater than 90% 
 if [[ -n $(df -h | grep 9[0-9]%) ]]; then
         echo df -h >> $file
