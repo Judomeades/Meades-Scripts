@@ -1,5 +1,6 @@
 #!/bin/bash
-#Mitchell Root cause all in one
+# Created by Judomeades and networkant
+# Root cause all in one
 date=`date +'%Y%m%d'`
 #If disk space is greater than 90%
 if [[ -n $(df -h | grep 9[0-9]%) ]]; then
