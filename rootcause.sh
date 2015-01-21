@@ -1,6 +1,7 @@
 #!/bin/bash
 # Created by Judomeades and networkant
 # Root cause all in one
+OS=$(cat /etc/*-release);
 date=`date +'%Y%m%d'`
 file=$date"rootcause.log"
 #If disk space is greater than 90% 
