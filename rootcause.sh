@@ -4,56 +4,56 @@
 
 date=`date +'%Y%m%d'`
 atopdate='date'
-Month=date | awk {'print $2'}
-Day=date | awk {'print $3'}
-Year=date | awk {'print $6'}
+Month=$(date | awk {'print $2'})
+Day=$(date | awk {'print $3'})
+Year=$(date | awk {'print $6'})
 
-if [ "$Month"=="Jan"]; then
-	$Month="1"
+if [ "$Month" = "Jan" ]; then
+        NMonth="01"
 fi
-if [ "$Month"=="Feb"]; then
-	$Month="2"
+if [ "$Month" = "Feb" ]; then
+        NMonth="02"
 fi
-if [ "$Month"=="Mar"]; then
-	$Month="3"
+if [ "$Month" = "Mar" ]; then
+        NMonth="03"
 fi
-if [ "$Month"=="Apr"]; then
-	$Month="4"
+if [ "$Month" = "Apr" ]; then
+        NMonth="04"
 fi
-if [ "$Month"=="May"]; then
-	$Month="5"
+if [ "$Month" = "May" ]; then
+        NMonth="05"
 fi
-if [ "$Month"=="Jun"]; then
-	$Month="6"
+if [ "$Month" = "Jun" ]; then
+        NMonth="06"
 fi
-if [ "$Month"=="Jul"]; then
-	$Month="7"
+if [ "$Month" = "Jul" ]; then
+        NMonth="07"
 fi
-if [ "$Month"=="Aug"]; then
-	$Month="8"
+if [ "$Month" = "Aug" ]; then
+        NMonth="08"
 fi
-if [ "$Month"=="Sep"]; then
-	$Month="9"
+if [ "$Month" = "Sep" ]; then
+        NMonth="09"
 fi
-if [ "$Month"=="Oct"]; then
-	$Month="10"
+if [ "$Month" = "Oct" ]; then
+        NMonth="10"
 fi
-if [ "$Month"=="Nov"]; then
-	$Month="11"
+if [ "$Month" = "Nov" ]; then
+        NMonth="11"
 fi
-if [ "$Month"=="Dec"]; then
-	$Month="12"
+if [ "$Month" = "Dec" ]; then
+        NMonth="12"
 fi
 file=$date"rootcause.log"
 
 #Determine OS ( redhat = 0; debian/other = 1)
 if [[ -n $(cat /etc/*-release | grep "ent") ]]; then
-	os=0
+        os=0
 else
-	os=1
+        os=1
 fi
 
-#If disk space is greater than 90% 
+#If disk space is greater than 90%
 if [[ -n $(df -h | grep 9[0-9]%) ]]; then
         echo df -h >> $file
 fi
@@ -88,6 +88,4 @@ else
         echo "Httpd is either not installed or off" >> $file
 fi
 
-
-atop -r /var/log/atop/atop_"$Year"+"$Month"+"$Day" | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW"
-
+atop -r /var/log/atop/atop_"$Year$NMonth$Day" | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW"
