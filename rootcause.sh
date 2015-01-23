@@ -46,3 +46,5 @@ if [[ -n $(service httpd status | grep uptime) ]]; then
 else
         echo "Httpd is either not installed or off" >> $file
 fi
+atop -r /var/log/atop/atop_20150123 | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW"
+
