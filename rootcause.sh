@@ -11,7 +11,7 @@ read day
 
 date="$year$month$day"
 
-date=`date +'%Y%m%d'`
+datesecondary=`date +'%Y%m%d'`
 atopdate='date'
 Month=$(date | awk {'print $2'})
 Day=$(date | awk {'print $3'})
@@ -53,7 +53,7 @@ fi
 if [ "$Month" = "Dec" ]; then
         NMonth="12"
 fi
-file=$date"rootcause.log"
+file=$datesecondary"rootcause.log"
 
 #If disk space is greater than 90%
 if [[ -n $(df -h | grep 9[0-9]%) ]]; then
@@ -103,7 +103,15 @@ if [ "$os" -eq 0 ]; then
          echo "We have installed atop now, however, there will likely not be enough information to definitely determine the cause of downtime.  We can check back in 12 hours to see if there is any activity in the atop logs between now and then though" >> $file
    else
        echo "Here are the results of atop:  If it is empty, then atop couldn't find what caused the downtime" >> $file
-       atop -r /var/log/atop/atop_"$Year$NMonth$Day" | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" >> $file 
+       atop -r /var/log/atop/atop_"$year$month$day" | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" >> $file 
+       if [ $? -eq 1 ]; then
+                echo " "
+                echo "No logs for that date, defaulting to current day"
+                echo "If you would like to try a different date, just type ./rootcause.sh to run the script again"
+                echo "Please allow a minute for the script to run"
+                atop -r /var/log/atop/atop_"$year$month$day" | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW"
+        fi
+
    fi
 fi
 if [ "$os" -eq 1 ]; then
@@ -114,6 +122,15 @@ if [ "$os" -eq 1 ]; then
     else
         echo "Here are the results of atop:  If it is empty, then atop couldn't find what caused the downtime" >> $file
         atop -r /var/log/atop/atop_"$Year$NMonth$Day" | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" >> $file
+        
+        if [ $? -eq 1 ]; then
+                echo " "
+                echo "No logs for that date, defaulting to current day"
+                echo "If you would like to try a different date, just type ./rootcause.sh to run the script again"
+                echo "Please allow a minute for the script to run"
+                atop -r /var/log/atop/atop_"$year$month$day" | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW"
+        fi
+
     fi
 fi
 
