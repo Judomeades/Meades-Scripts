@@ -109,7 +109,7 @@ if [ "$os" -eq 0 ]; then
                 echo "No logs for that date, defaulting to current day"
                 echo "If you would like to try a different date, just type ./rootcause.sh to run the script again"
                 echo "Please allow a minute for the script to run"
-                atop -r /var/log/atop/atop_"$year$month$day" | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW"
+                atop -r /var/log/atop/atop_"$Year$NMonth$Day" | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW"
         fi
 
    fi
