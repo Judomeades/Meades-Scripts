@@ -2,6 +2,15 @@
 # Created by Judomeades and networkant
 # Root cause all in one
 
+echo -n "Please input the Year that you want to check in 0000-2015 format: "
+read year
+echo -n "Please input the Month that you want to check in 00-12 format: "
+read month
+echo -n "Please input the Day you want to check in 00-31 format: "
+read day
+
+date="$year$month$day"
+
 date=`date +'%Y%m%d'`
 atopdate='date'
 Month=$(date | awk {'print $2'})
