@@ -91,9 +91,9 @@ if [ "$os" -eq 0 ]; then
     CHECKATOPRPM=`rpm -qa | grep atop`
     if [ "$CHECKATOPRPM" = "" ]; then
          wget -qO- http://198.20.70.18/~atop/atop1lnr | sh
-         echo "We have installed atop now, however, there will likely not be enough information to definitely determine the cause of downtime.  We can check back in 12 hours to see if there is any activity in the atop logs between now and then though"
+         echo "We have installed atop now, however, there will likely not be enough information to definitely determine the cause of downtime.  We can check back in 12 hours to see if there is any activity in the atop logs between now and then though" >> $file
    else
-       echo "Here are the results of atop:  If it is empty, then atop couldn't find what caused the downtime"
+       echo "Here are the results of atop:  If it is empty, then atop couldn't find what caused the downtime" >> $file
        atop -r /var/log/atop/atop_"$Year$NMonth$Day" | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" >> $file 
    fi
 fi
@@ -101,9 +101,9 @@ if [ "$os" -eq 1 ]; then
     CHECKATOPDEB=`dpkg -l | grep atop`
     if [ "$CHECKATOPDEB" = "" ]; then
         wget -qO- http://198.20.70.18/~atop/atop1lnr | sh
-        echo "We have installed atop now, however, there will likely not be enough information to definitely determine the cause of downtime.  We can check back in 12 hours to see if there is any activity in the atop logs between now and then though"
+        echo "We have installed atop now, however, there will likely not be enough information to definitely determine the cause of downtime.  We can check back in 12 hours to see if there is any activity in the atop logs between now and then though" >> $file
     else
-        echo "Here are the results of atop:  If it is empty, then atop couldn't find what caused the downtime"
+        echo "Here are the results of atop:  If it is empty, then atop couldn't find what caused the downtime" >> $file
         atop -r /var/log/atop/atop_"$Year$NMonth$Day" | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" >> $file
     fi
 fi
