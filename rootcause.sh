@@ -99,7 +99,7 @@ if [ "$os" -eq 0 ]; then
                 echo "Please choose one of these days in year month day format"
                 echo "Example 20150315 for March 15, 2015"
                 read date
-                if [ "$date" -ne "$datesecondary" ] then
+                if [ "$date" -ne "$datesecondary" ]; then
                         atop -r /var/log/atop/atop_"$date".1 | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW"
                 else
                        atop -r /var/log/atop/atop_"$date" | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" 
@@ -118,16 +118,23 @@ if [ "$os" -eq 1 ]; then
         wget -qO- http://198.20.70.18/~atop/atop1lnr | sh
         echo "We have installed atop now, however, there will likely not be enough information to definitely determine the cause of downtime.  We can check back in 12 hours to see if there is any activity in the atop logs between now and then though" >> $file
     else
-        atop -r /var/log/atop/atop_"$Year$NMonth$Day" | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" >> $file
-        
-        if [ $? -eq 1 ]; then
-                echo " "
-                echo "No logs for that date, defaulting to current day"
-                echo "If you would like to try a different date, just type ./rootcause.sh to run the script again"
-                echo "Please allow a minute for the script to run"
-                atop -r /var/log/atop/atop_"$year$month$day" | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW"
+       counter=1
+        while [[ $counter -lt 2 ]]; do
+                ls /var/log/atop | grep atop | grep -v log
+                echo "Please choose one of these days in year month day format"
+                echo "Example 20150315 for March 15, 2015"
+                read date
+                if [ "$date" -ne "$datesecondary" ]; then
+                        atop -r /var/log/atop/atop_"$date".1 | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW"
+                else
+                       atop -r /var/log/atop/atop_"$date" | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" 
+                fi
+        if [ $? != 0 ]; then
+                echo "Invalid choice"
+                let counter=counter-1
         fi
-
+        let counter=counter+1
+        done
     fi
 fi
 
