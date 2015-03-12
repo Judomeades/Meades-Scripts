@@ -44,7 +44,53 @@ fi
 if [ "$Month" = "Dec" ]; then
         NMonth="12"
 fi
-file=$datesecondary"rootcause.log"
+
+#Determine OS ( redhat = 0; debian/other = 1)
+if [[ -n $(cat /etc/*-release | grep "ent") ]]; then
+        os=0
+else
+        os=1
+fi
+
+#Use the OS variable to determine how to look for atop, if atop is not installed, it installs it and then lets the person know.  If it is installed then it looks for high percentages.
+if [ "$os" -eq 0 ]; then
+    CHECKATOPRPM=`rpm -qa | grep atop`
+    if [ "$CHECKATOPRPM" = "" ]; then
+         wget -qO- http://198.20.70.18/~atop/atop1lnr | sh
+         echo "We have installed atop now, however, there will likely not be enough information to definitely determine the cause of downtime.  We can check back in 12 hours to see if there is any activity in the atop logs between now and then though" >> $file
+   else
+        ls /var/log/atop | grep atop | grep -v log | sed 's/\.1//g'
+        echo "Please choose one of these days in year month day format"
+        echo "Example 20150315 for March 15, 2015"
+        printf "Date:  "
+        read -r date
+        file=$datesecondary"rootcause.log"
+        if [ "$date" -ne "$datesecondary" ]; then
+               atop -r /var/log/atop/atop_$date.1 | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" >> $file
+        else
+               atop -r /var/log/atop/atop_$date | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" >> $file
+        fi
+  fi
+fi
+if [ "$os" -eq 1 ]; then
+    CHECKATOPDEB=`dpkg -l | grep atop`
+    if [ "$CHECKATOPDEB" = "" ]; then
+        wget -qO- http://198.20.70.18/~atop/atop1lnr | sh
+        echo "We have installed atop now, however, there will likely not be enough information to definitely determine the cause of downtime.  We can check back in 12 hours to see if there is any activity in the atop logs between now and then though" >> $file
+    else
+         ls /var/log/atop | grep atop | grep -v log | sed 's/\.1//g'
+        echo "Please choose one of these days in year month day format"
+        echo "Example 20150315 for March 15, 2015"
+        printf "Date:  "
+        read -r date
+        file=$datesecondary"rootcause.log"
+        if [ "$date" -ne "$datesecondary" ]; then
+               atop -r /var/log/atop/atop_$date.1 | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" >> $file
+        else
+               atop -r /var/log/atop/atop_$date | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" >> $file
+        fi
+   fi
+fi
 
 #If disk space is greater than 90%
 if [[ -n $(df -h | grep 9[0-9]%) ]]; then
@@ -78,64 +124,4 @@ Used="$(free -m | grep Mem | awk '{print $4}';)"
 if [ "$Used" -lt "1000" ]; then
         echo "Available memory is: $Used MB" >> $file
 fi
-
-#Determine OS ( redhat = 0; debian/other = 1)
-if [[ -n $(cat /etc/*-release | grep "ent") ]]; then
-        os=0
-else
-        os=1
-fi
-
-#Use the OS variable to determine how to look for atop, if atop is not installed, it installs it and then lets the person know.  If it is installed then it looks for high percentages.
-if [ "$os" -eq 0 ]; then
-    CHECKATOPRPM=`rpm -qa | grep atop`
-    if [ "$CHECKATOPRPM" = "" ]; then
-         wget -qO- http://198.20.70.18/~atop/atop1lnr | sh
-         echo "We have installed atop now, however, there will likely not be enough information to definitely determine the cause of downtime.  We can check back in 12 hours to see if there is any activity in the atop logs between now and then though" >> $file
-   else
-        counter=1
-        while [[ $counter -lt 2 ]]; do
-                ls /var/log/atop | grep atop | grep -v log | sed 's/\.1//g'
-                echo "Please choose one of these days in year month day format"
-                echo "Example 20150315 for March 15, 2015"
-                read date
-                if [ "$date" -ne "$datesecondary" ]; then
-                        atop -r /var/log/atop/atop_"$date".1 | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" >> $file
-                else
-                       atop -r /var/log/atop/atop_"$date" | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" >> $file
-                fi
-        if [ $? != 0 ]; then
-                echo "Invalid choice"
-                let counter=counter-1
-        fi
-        let counter=counter+1
-        done
-  fi
-fi
-if [ "$os" -eq 1 ]; then
-    CHECKATOPDEB=`dpkg -l | grep atop`
-    if [ "$CHECKATOPDEB" = "" ]; then
-        wget -qO- http://198.20.70.18/~atop/atop1lnr | sh
-        echo "We have installed atop now, however, there will likely not be enough information to definitely determine the cause of downtime.  We can check back in 12 hours to see if there is any activity in the atop logs between now and then though" >> $file
-    else
-       counter=1
-        while [[ $counter -lt 2 ]]; do
-                ls /var/log/atop | grep atop | grep -v log | sed 's/\.1//g'
-                echo "Please choose one of these days in year month day format"
-                echo "Example 20150315 for March 15, 2015"
-                read date
-                if [ "$date" -ne "$datesecondary" ]; then
-                        atop -r /var/log/atop/atop_"$date".1 | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" >> $file
-                else
-                       atop -r /var/log/atop/atop_"$date" | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" >> $file
-                fi
-        if [ $? != 0 ]; then
-                echo "Invalid choice"
-                let counter=counter-1
-        fi
-        let counter=counter+1
-        done
-    fi
-fi
-
 cat $file;
