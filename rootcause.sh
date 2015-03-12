@@ -64,6 +64,7 @@ if [ "$os" -eq 0 ]; then
         echo "Example 20150315 for March 15, 2015"
         printf "Date:  "
         read -r date
+        echo ""
         file=$datesecondary"rootcause.log"
         if [ "$date" -ne "$datesecondary" ]; then
                atop -r /var/log/atop/atop_$date.1 | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" >> $file
@@ -83,6 +84,7 @@ if [ "$os" -eq 1 ]; then
         echo "Example 20150315 for March 15, 2015"
         printf "Date:  "
         read -r date
+        echo ""
         file=$datesecondary"rootcause.log"
         if [ "$date" -ne "$datesecondary" ]; then
                atop -r /var/log/atop/atop_$date.1 | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" >> $file
