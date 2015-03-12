@@ -95,14 +95,14 @@ if [ "$os" -eq 0 ]; then
    else
         counter=1
         while [[ $counter -lt 2 ]]; do
-                ls /var/log/atop | grep atop | grep -v log
+                ls /var/log/atop | grep atop | grep -v log | sed 's/\.1//g'
                 echo "Please choose one of these days in year month day format"
                 echo "Example 20150315 for March 15, 2015"
                 read date
                 if [ "$date" -ne "$datesecondary" ]; then
-                        atop -r /var/log/atop/atop_"$date".1 | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW"
+                        atop -r /var/log/atop/atop_"$date".1 | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" >> $file
                 else
-                       atop -r /var/log/atop/atop_"$date" | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" 
+                       atop -r /var/log/atop/atop_"$date" | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" >> $file
                 fi
         if [ $? != 0 ]; then
                 echo "Invalid choice"
@@ -120,14 +120,14 @@ if [ "$os" -eq 1 ]; then
     else
        counter=1
         while [[ $counter -lt 2 ]]; do
-                ls /var/log/atop | grep atop | grep -v log
+                ls /var/log/atop | grep atop | grep -v log | sed 's/\.1//g'
                 echo "Please choose one of these days in year month day format"
                 echo "Example 20150315 for March 15, 2015"
                 read date
                 if [ "$date" -ne "$datesecondary" ]; then
-                        atop -r /var/log/atop/atop_"$date".1 | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW"
+                        atop -r /var/log/atop/atop_"$date".1 | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" >> $file
                 else
-                       atop -r /var/log/atop/atop_"$date" | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" 
+                       atop -r /var/log/atop/atop_"$date" | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" >> $file
                 fi
         if [ $? != 0 ]; then
                 echo "Invalid choice"
