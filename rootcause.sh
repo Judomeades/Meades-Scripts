@@ -59,10 +59,10 @@ uptime >> $file
 
 #If disk space is greater than 90%
 if [[ -n $(df -h | grep 9[0-9]%) ]]; then
-        echo df -h >> $file
+        echo "$(df -h)" >> $file
 fi
 if [[ -n $(df -h | grep 100%) ]]; then
-        echo df -h >> $file
+        echo "$(df -h)" >> $file
 fi
 
 #Check for out of memory in /var/log/messages
