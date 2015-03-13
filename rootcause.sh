@@ -109,10 +109,10 @@ if [ "$os" -eq 0 ]; then
         file=$date"rootcause.log"
         checkall
         if [ "$date" -ne "$datesecondary" ]; then
-                echo "Here are the results of looking through the atop log:"
+                echo "Here are the results of looking through the atop log:" >> $file
                atop -r /var/log/atop/atop_$date.1 | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" >> $file
         else
-                echo "Here are the results of looking through the atop log:"
+                echo "Here are the results of looking through the atop log:" >> $file
                atop -r /var/log/atop/atop_$date | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" >> $file
         fi
   fi
@@ -134,10 +134,10 @@ if [ "$os" -eq 1 ]; then
         file=$date"rootcause.log"
         checkall
         if [ "$date" -ne "$datesecondary" ]; then
-                echo "Here are the results of looking through the atop log:"
+                echo "Here are the results of looking through the atop log:" >> $file
                atop -r /var/log/atop/atop_$date.1 | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" >> $file
         else
-                echo "Here are the results of looking through the atop log:"
+                echo "Here are the results of looking through the atop log:" >> $file
                atop -r /var/log/atop/atop_$date | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" >> $file
         fi
    fi
