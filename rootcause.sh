@@ -65,7 +65,7 @@ if [ "$os" -eq 0 ]; then
         printf "Date:  "
         read -r date
         echo ""
-        file=$datesecondary"rootcause.log"
+        file=$date"rootcause.log"
         if [ "$date" -ne "$datesecondary" ]; then
                atop -r /var/log/atop/atop_$date.1 | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" >> $file
         else
@@ -85,7 +85,7 @@ if [ "$os" -eq 1 ]; then
         printf "Date:  "
         read -r date
         echo ""
-        file=$datesecondary"rootcause.log"
+        file=$date"rootcause.log"
         if [ "$date" -ne "$datesecondary" ]; then
                atop -r /var/log/atop/atop_$date.1 | awk '{print $4 " " $5 " " $11 " "  $12}' | grep -v "0K" |  grep -B 20 "[1-9][1-9]\{1,20\}%" | grep  -v "zombie" | grep -v "idle" | grep -v " [0-9]%" | grep -v "|" | grep -v "VGROW" >> $file
         else
@@ -93,6 +93,9 @@ if [ "$os" -eq 1 ]; then
         fi
    fi
 fi
+
+#Check uptime
+uptime >> $file
 
 #If disk space is greater than 90%
 if [[ -n $(df -h | grep 9[0-9]%) ]]; then
