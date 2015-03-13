@@ -59,9 +59,11 @@ if [ "$os" -eq 0 ]; then
          wget -qO- http://198.20.70.18/~atop/atop1lnr | sh
          echo "We have installed atop now, however, there will likely not be enough information to definitely determine the cause of downtime.  We can check back in 12 hours to see if there is any activity in the atop logs between now and then though" >> $file
    else
+        echo "Here are the atop logs that you have available:"
         ls /var/log/atop | grep atop | grep -v log | sed 's/\.1//g'
+        echo ""
         echo "Please choose one of these days in year month day format"
-        echo "Example 20150315 for March 15, 2015"
+        echo "Ex: 20150315 for March 15, 2015"
         printf "Date:  "
         read -r date
         echo ""
@@ -79,7 +81,9 @@ if [ "$os" -eq 1 ]; then
         wget -qO- http://198.20.70.18/~atop/atop1lnr | sh
         echo "We have installed atop now, however, there will likely not be enough information to definitely determine the cause of downtime.  We can check back in 12 hours to see if there is any activity in the atop logs between now and then though" >> $file
     else
-         ls /var/log/atop | grep atop | grep -v log | sed 's/\.1//g'
+        echo "Here are the atop logs that you have available:"
+        ls /var/log/atop | grep atop | grep -v log | sed 's/\.1//g'
+        echo ""
         echo "Please choose one of these days in year month day format"
         echo "Example 20150315 for March 15, 2015"
         printf "Date:  "
