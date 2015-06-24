@@ -22,9 +22,6 @@ def install_csf():
 	subprocess.call([singlehopip], shell=True)
 	subprocess.call([singlehopallowhosts], shell=True)
 def sudoersetup():
-	#!/usr/bin/env python
-	import subprocess
-	import socket
 	#Allow wheel group
 	allow_wheel = "echo '%wheel ALL=(ALL)   ALL' >> /etc/sudoers"
 	subprocess.call([allow_wheel], shell=True)
@@ -67,27 +64,6 @@ def fail2bansetup():
 		print "Still waiting on a CentOS 5 install to confirm instructions"
 	else:
 		print "Unsupported OS version, please install yumupdatesd or yum-cron manually"
-	
-	
-def shield_func():
-	
-	while(True):
-		answer = raw_input("Please enter a single IP addresses to whitelist for ssh: \n")
-		valid_ip(answer)
-		#whitelist = "csf -a %s" % answer
-		#csfallow = "echo SSHD %s allow /etc/hosts.allow" % answer
-		#subprocess.call([whitelist], shell=True)
-		#subprocess.call([singlehopip], shell=True)
-		#subprocess.call([singlehopallow], shell=True)
-		break;
-	#Create a sudoer user
-		sudoer = raw_input("Please enter a sudoer user name: \n")
-		create_user = "useradd -G wheel %s" % sudoer
-		subprocess.call([create_user], shell=True)
-		password = getpass.getpas()
-		create_password = "passwd -q %s" % sudoer
-		
-		subprocess.call([])
 	
 def main():
 	print "Here is the menu:\n"
