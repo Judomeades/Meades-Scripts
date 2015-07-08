@@ -32,7 +32,7 @@ def sudoersetup():
 	subprocess.call([passchange], shell=True)
 	print "User setup successfull"
 	#Disable root login
-	disableroot = "echo 'PermitRootLogin no >> /etc/ssh/sshd_config' && service sshd restart"
+	disableroot = "echo 'PermitRootLogin no' >> /etc/ssh/sshd_config && service sshd restart"
 	subprocess.call([disableroot], shell=True)
 	menu()
 def fail2bansetup():
