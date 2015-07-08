@@ -20,6 +20,7 @@ def install_csf():
 	singlehopallowhosts = "%s %s %s; %s %s %s; %s %s %s; %s %s %s; %s %s %s; %s %s %s;" % (echo, IP1, allow, echo, IP2, allow, echo, IP3, allow, echo, IP4, allow, echo, IP5, allow, echo, IP6, allow)
 	subprocess.call([singlehopip], shell=True)
 	subprocess.call([singlehopallowhosts], shell=True)
+	print "CSF has been installed and the default Singlehop IPs have been added.  Please whitelist any additional IPs in /etc/hosts.allow manually.  If you need to limit port access, modify /etc/csf/csf.conf"
 	menu()
 def sudoersetup():
 	#Allow wheel group
@@ -34,14 +35,13 @@ def sudoersetup():
 	#Disable root login
 	disableroot = "echo 'PermitRootLogin no' >> /etc/ssh/sshd_config && service sshd restart"
 	subprocess.call([disableroot], shell=True)
+	print "Root user disabled, make sure to update manage with the sudoer user"
 	menu()
 def fail2bansetup():
 	architecture = "uname -p"
 	OS_version = "cat /etc/redhat-release | awk '{print $3}' | awk -F '[.]' '{print $1}'"
 	architecture = subprocess.call([architecture], shell=True)
 	OS_version = subprocess.call([OS_version], shell=True)
-	#architecture = subprocess.call(["uname -p"], shell=True)
-	#OS_version = subprocess.call(["cat /etc/redhat-release | awk '{print $3}' | awk -F '[.]' '{print $1}'"], shell=True)
 	#fail2ban
 	print "%s %s" % (architecture, OS_version)
 	fail2ban_centos_6_64bit = "rpm -Uvh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
@@ -100,5 +100,3 @@ def main():
 	menu()
 	
 main()
-	
-	
