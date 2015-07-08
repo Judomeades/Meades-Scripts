@@ -2,7 +2,6 @@
 #Last Edit:  7/8/15
 #!/usr/bin/env python
 import subprocess
-import commands
 def install_csf():
 	csf = """wget http://www.configserver.com/free/csf.tgz && tar -xvf csf.tgz; cd csf && sh install.sh && ls /etc/csf/csf.conf | xargs sed -i 's/TESTING = "1"/TESTING = "0"/g' && csf -r"""
 	print "Installing CSF"
@@ -22,7 +21,7 @@ def install_csf():
 	singlehopallowhosts = "%s %s %s; %s %s %s; %s %s %s; %s %s %s; %s %s %s; %s %s %s;" % (echo, IP1, allow, echo, IP2, allow, echo, IP3, allow, echo, IP4, allow, echo, IP5, allow, echo, IP6, allow)
 	subprocess.call([singlehopip], shell=True)
 	subprocess.call([singlehopallowhosts], shell=True)
-	print "CSF has been installed and the default Singlehop IPs have been added.  Please whitelist any additional IPs in /etc/hosts.allow manually.  If you need to limit port access, modify /etc/csf/csf.conf"
+	print "CSF has been installed and the default Singlehop IPs have been added.  \nPlease whitelist any additional IPs in /etc/hosts.allow manually.  \nIf you need to limit port access, modify /etc/csf/csf.conf"
 	menu()
 def sudoersetup():
 	#Allow wheel group
@@ -52,7 +51,6 @@ def fail2bansetup():
 		OS_verison = "5"
 
 	#fail2ban
-	print "%s %s" % (architecture, OS_version)
 	fail2ban_centos_6_64bit = "rpm -Uvh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
 	fail2ban_centos_6_32bit = "rpm -Uvh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
 	fail2ban_centos_5_64bit = "rpm -Uvh http://dl.fedoraproject.org/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm"
