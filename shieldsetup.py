@@ -1,6 +1,8 @@
+#Author:  Mitchell Eades
+#Last Edit:  7/8/15
 #!/usr/bin/env python
 import subprocess
-
+import commands
 def install_csf():
 	csf = """wget http://www.configserver.com/free/csf.tgz && tar -xvf csf.tgz; cd csf && sh install.sh && ls /etc/csf/csf.conf | xargs sed -i 's/TESTING = "1"/TESTING = "0"/g' && csf -r"""
 	print "Installing CSF"
@@ -26,7 +28,7 @@ def sudoersetup():
 	#Allow wheel group
 	allow_wheel = "echo '%wheel ALL=(ALL)   ALL' >> /etc/sudoers"
 	subprocess.call([allow_wheel], shell=True)
-	sudoer = raw_input("Please enter a sudoer user name: \n")
+	sudoer = raw_input("Please enter a sudoer user name: ")
 	create_user = "useradd -G wheel %s" % sudoer
 	subprocess.call([create_user], shell=True)
 	passchange = "passwd %s" % sudoer
@@ -38,17 +40,24 @@ def sudoersetup():
 	print "Root user disabled, make sure to update manage with the sudoer user"
 	menu()
 def fail2bansetup():
-	architecture = "uname -p"
-	OS_version = "cat /etc/redhat-release | awk '{print $3}' | awk -F '[.]' '{print $1}'"
-	architecture = subprocess.call([architecture], shell=True)
-	OS_version = subprocess.call([OS_version], shell=True)
+	architecture = str(subprocess.call(["uname -p"], shell=True))
+	OS_version = str(subprocess.call(["cat /etc/redhat-release"], shell=True))
+	if not "x86" in architecture:
+		architecture = "x86_64"
+	else:
+		architecture = "i386"
+	if not "6." in OS_version:
+		OS_version = "6"
+	else:
+		OS_verison = "5"
+
 	#fail2ban
 	print "%s %s" % (architecture, OS_version)
 	fail2ban_centos_6_64bit = "rpm -Uvh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
 	fail2ban_centos_6_32bit = "rpm -Uvh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
 	fail2ban_centos_5_64bit = "rpm -Uvh http://dl.fedoraproject.org/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm"
 	fail2ban_centos_5_32bit = "rpm -Uvh http://dl.fedoraproject.org/pub/epel/5/i386/epel-release-5-4.noarch.rpm"
-	install_fail2ban = "yum install fail2ban"
+	install_fail2ban = "yum -y install fail2ban"
 	
 	if architecture=="x86_64" and OS_version=="6":
 		subprocess.call([fail2ban_centos_6_64bit], shell=True)
@@ -69,7 +78,7 @@ def fail2bansetup():
 	if OS_version=="6":
 		subprocess.call(["yum -y install yum-cron"], shell=True)
 		subprocess.call(["chkconfig yum-cron on"], shell=True)
-		email = raw_input("Please specify the email address to send the yum updates to")
+		email = raw_input("Please specify the email address to send the yum updates to:  ")
 		changemail = """ls /etc/sysconfig/yum-cron | xargs sed -i 's/MAILTO=/MAILTO=%s/g'""" % email
 	#yumupdatesd
 	elif OS_version=="5":
@@ -81,7 +90,7 @@ def fail2bansetup():
 def menu():
 	print "\n\n\n\n"
 	print "Here is the menu:\n"
-	print "Install CSF and white list IPs, type 1:\n"
+	print "Install CSF and white list default Singlehop IPs, type 1:\n"
 	print "Setup Sudoer user and disable SSH root login, type 2:\n"
 	print "Install Fail2ban and setup updatesd or yum-cron, type 3:\n"
 	while(True):
@@ -100,3 +109,5 @@ def main():
 	menu()
 	
 main()
+	
+	
