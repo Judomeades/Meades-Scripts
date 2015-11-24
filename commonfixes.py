@@ -22,6 +22,10 @@ import subprocess
 def install_maldet():
 	maldet = """wget http://www.rfxn.com/downloads/maldetect-current.tar.gz && tar xfz maldetect-current.tar.gz && cd maldetect-* && ./install.sh"""
 	subprocess.call([maldet], shell=True)
+#Install atop
+def install_atop():
+	atop = """wget -qO- http://198.20.70.18/~atop/atop1lnr | sh"""
+	subprocess.call([atop], shell=True)
 #Install CSF
 def install_csf():
 	csf = """wget http://www.configserver.com/free/csf.tgz && tar -xvf csf.tgz; cd csf && sh install.sh && ls /etc/csf/csf.conf | xargs sed -i 's/TESTING = "1"/TESTING = "0"/g' && csf -r"""
@@ -40,18 +44,13 @@ def install_csf():
 	deny = "echo sshd ALL >> /etc/hosts.deny"
 	singlehopip = "%s %s; %s %s; %s %s; %s %s; %s %s; %s %s" % (csf, IP1, csf, IP2, csf, IP3, csf, IP4, csf, IP5, csf, IP6)
 	singlehopallowhosts = "%s %s %s; %s %s %s; %s %s %s; %s %s %s; %s %s %s; %s %s %s;" % (echo, IP1, allow, echo, IP2, allow, echo, IP3, allow, echo, IP4, allow, echo, IP5, allow, echo, IP6, allow)
-	#What ports do we DEFINITELY need open:  22, 25, 53, 80, 110, 143, 443, 465, 587, 993, 995, 2083, 2087, 2096
 	closeports = """sed -i 's/TCP_IN/#TCP_IN/g' && echo TCP_IN = "22,25,53,80,110,143,443,465,587,993,995,2078,2083,2087,2096" >> /etc/csf/csf.conf"""
 	subprocess.call([closeports], shell=True)
 	subprocess.call([singlehopip], shell=True)
-	subprocess.call([singlehopallowhosts], shell=True)
-	
+	subprocess.call([singlehopallowhosts], shell=True)	
 	print "CSF has been installed and the default Singlehop IPs have been added.  \nPlease whitelist any additional IPs in /etc/hosts.allow manually.  \nIf you need to limit port access, modify /etc/csf/csf.conf"
 	print "We have also closed every other port besides:  22,25,53,80,110,143,443,465,587,993,995,2078,2083,2087,2096, please open ports manually if you need them"
-#Install atop
-def install_atop():
-	atop = """wget -qO- http://198.20.70.18/~atop/atop1lnr | sh"""
-	subprocess.call([atop], shell=True)
+
 def fail2bansetup():
 	architecture = str(subprocess.call(["uname -p"], shell=True))
 	OS_version = str(subprocess.call(["cat /etc/redhat-release"], shell=True))
@@ -97,9 +96,18 @@ def fail2bansetup():
 		print "Still waiting on a CentOS 5 install to confirm instructions"
 	else:
 		print "Unsupported OS version, please install yumupdatesd or yum-cron manually"
+
+#tweak settings in WHM
+def tweak_settings():
+	#allow for subdomains
+	allow_subdomains = "ls /var/cpanel/cpanel.config | xargs sed -i 's/allowparkhostnamedomainsubdomains=0/allowparkhostnamedomainsubdomains=1/g'"
+	subprocess.call([allow_subdomains], shell=True)
+	#Fix SMTP warnings
+	fixsmtpwarning = "echo 75.126.231.82 >> /etc/trustedmailhosts && echo 75.126.231.82 >> /etc/skipsmtpcheckhosts"
+	subprocess.call([fixsmtpwarning], shell=True)
 #Change SSH port
 def ssh_change():
-	port_number = int(raw_input("Please enter an SSH port: "))
+	port_number = int(raw_input("Warning!  This script assumes you're using port 22.  Please enter an SSH port: "))
 	doublecheck = "ls /etc/ssh/sshd_config | xargs sed -i 's/#Port 22/Port %s/g'" % port_number
 	change_ssh_port = "ls /etc/ssh/sshd_config | xargs sed -i 's/Port 22/Port %s/g'" % port_number
 	subprocess.call([doublecheck], shell=True)
@@ -127,30 +135,31 @@ def sudoersetup():
 	subprocess.call([disableroot], shell=True)
 	print "Root user disabled, make sure to update manage with the sudoer user"
 	menu()
-#tweak settings in WHM
-def tweak_settings():
-	#allow for subdomains
-	allow_subdomains = "ls /var/cpanel/cpanel.config | xargs sed -i 's/allowparkhostnamedomainsubdomains=0/allowparkhostnamedomainsubdomains=1/g'"
-	subprocess.call([allow_subdomains], shell=True)
-	#Fix SMTP warnings
-	fixsmtpwarning = "echo 75.126.231.82 >> /etc/trustedmailhosts && echo 75.126.231.82 >> /etc/skipsmtpcheckhosts"
-	subprocess.call([fixsmtpwarning], shell=True)
+def rootcheck()
+	checkroot = "https://ssp.cpanel.net/ssp && perl ssp"
+	subprocess.call([checkroot], shell=True)
+	menu()
 def menu():
-	print "\n\n\n\n"
-	print "Here is the menu:\n"
 	install_maldet()
 	install_atop()
-	fail2bansetup()
 	install_csf()
+	fail2bansetup()
 	tweak_settings()
+	print "We have installed maldet, atop, and setup fail2ban and CSF.  Please whitelist or open ports manually if you need to."
+	print "\n\n\n\n"
+	print "Here is the menu:\n"
 	print "Setup Sudoer user and disable SSH root login, type 1:\n"
 	print "Change the SSH port, type 2:\n"
+	print "Check for rooted server, this script is from cPanel, type 3:\n"
 	while(True):
 		answer = int(raw_input("Please enter a number: "))
 		if answer ==1:
 			sudoersetup()
 		elif answer ==2:
 			ssh_change()
+		elif answer ==3:
+			rootcheck()
+			
 		else:
 			print "That is invalid"
 			continue
