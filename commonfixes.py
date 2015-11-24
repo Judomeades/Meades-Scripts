@@ -135,7 +135,7 @@ def sudoersetup():
 	subprocess.call([disableroot], shell=True)
 	print "Root user disabled, make sure to update manage with the sudoer user"
 	menu()
-def rootcheck()
+def rootcheck():
 	checkroot = "https://ssp.cpanel.net/ssp && perl ssp"
 	subprocess.call([checkroot], shell=True)
 	menu()
