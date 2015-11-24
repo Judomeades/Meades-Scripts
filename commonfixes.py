@@ -140,11 +140,6 @@ def rootcheck():
 	subprocess.call([checkroot], shell=True)
 	menu()
 def menu():
-	install_maldet()
-	install_atop()
-	install_csf()
-	fail2bansetup()
-	tweak_settings()
 	print "We have installed maldet, atop, and setup fail2ban and CSF.  Please whitelist or open ports manually if you need to."
 	print "\n\n\n\n"
 	print "Here is the menu:\n"
@@ -163,8 +158,16 @@ def menu():
 		else:
 			print "That is invalid"
 			continue
+def initialsetup():
+	install_maldet()
+	install_atop()
+	install_csf()
+	fail2bansetup()
+	tweak_settings()
+	menu()
+
 		
 def main():
-	menu()
+	initialsetup()
 	
 main()
