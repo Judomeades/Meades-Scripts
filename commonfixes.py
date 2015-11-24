@@ -44,7 +44,7 @@ def install_csf():
 	deny = "echo sshd ALL >> /etc/hosts.deny"
 	singlehopip = "%s %s; %s %s; %s %s; %s %s; %s %s; %s %s" % (csf, IP1, csf, IP2, csf, IP3, csf, IP4, csf, IP5, csf, IP6)
 	singlehopallowhosts = "%s %s %s; %s %s %s; %s %s %s; %s %s %s; %s %s %s; %s %s %s;" % (echo, IP1, allow, echo, IP2, allow, echo, IP3, allow, echo, IP4, allow, echo, IP5, allow, echo, IP6, allow)
-	closeports = """sed -i 's/TCP_IN/#TCP_IN/g' && echo TCP_IN = "22,25,53,80,110,143,443,465,587,993,995,2078,2083,2087,2096" >> /etc/csf/csf.conf"""
+	closeports = """sed -i 's/TCP_IN/#TCP_IN/g' /etc/csf/csf.conf && echo TCP_IN = "22,25,53,80,110,143,443,465,587,993,995,2078,2083,2087,2096" >> /etc/csf/csf.conf"""
 	subprocess.call([closeports], shell=True)
 	subprocess.call([singlehopip], shell=True)
 	subprocess.call([singlehopallowhosts], shell=True)	
@@ -105,6 +105,8 @@ def tweak_settings():
 	#Fix SMTP warnings
 	fixsmtpwarning = "echo 75.126.231.82 >> /etc/trustedmailhosts && echo 75.126.231.82 >> /etc/skipsmtpcheckhosts"
 	subprocess.call([fixsmtpwarning], shell=True)
+	#Fix wget
+	#Still needs to be filled out.
 #Change SSH port
 def ssh_change():
 	port_number = int(raw_input("Warning!  This script assumes you're using port 22.  Please enter an SSH port: "))
@@ -139,6 +141,10 @@ def rootcheck():
 	checkroot = "https://ssp.cpanel.net/ssp && perl ssp"
 	subprocess.call([checkroot], shell=True)
 	menu()
+def ddosprotect():
+	fixddos = """iptables -A INPUT -j ACCEPT -p tcp --dport 80 -m state --state NEW -m limit --limit 40/s --limit-burst 5 -m comment --comment 'Allow incoming HTTP' && iptables -A INPUT -j ACCEPT -p tcp --dport 443 -m state --state NEW -m limit --limit 40/s --limit-burst 5 -m comment --comment 'Allow incoming HTTPS' && iptables -A INPUT -i lo -j ACCEPT && iptables -A INPUT -j ACCEPT -m state --state RELATED,ESTABLISHED -m limit --limit 100/s --limit-burst 50 && iptables -A INPUT -j REJECT && iptables-save"""
+	subprocess.call([fixddos], shell=True)
+	menu()
 def menu():
 	print "We have installed maldet, atop, and setup fail2ban and CSF.  Please whitelist or open ports manually if you need to."
 	print "\n\n\n\n"
@@ -164,6 +170,7 @@ def initialsetup():
 	install_csf()
 	fail2bansetup()
 	tweak_settings()
+	rootcheck()
 	menu()
 
 		
