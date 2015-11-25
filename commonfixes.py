@@ -115,7 +115,7 @@ def ssh_change():
 	subprocess.call([change_ssh_port], shell=True)
 	iptableswhitelist = "iptables -A INPUT -p tcp --dport %s -j ACCEPT" % port_number
 	subprocess.call([iptableswhitelist], shell=True)
-	allowincsf = "sed -i 's/22/%s/g' /etc/csf/csf.conf" % port_number
+	allowincsf = "sed -i '0,/22/ s/22/%s/' /etc/csf/csf.conf" % port_number
 	subprocess.call([allowincsf], shell=True)
 	restartssh = "service sshd restart"
 	subprocess.call([restartssh], shell=True)
