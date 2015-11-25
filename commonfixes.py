@@ -44,13 +44,12 @@ def install_csf():
 	deny = "echo sshd ALL >> /etc/hosts.deny"
 	singlehopip = "%s %s; %s %s; %s %s; %s %s; %s %s; %s %s" % (csf, IP1, csf, IP2, csf, IP3, csf, IP4, csf, IP5, csf, IP6)
 	singlehopallowhosts = "%s %s %s; %s %s %s; %s %s %s; %s %s %s; %s %s %s; %s %s %s;" % (echo, IP1, allow, echo, IP2, allow, echo, IP3, allow, echo, IP4, allow, echo, IP5, allow, echo, IP6, allow)
-	closeports = """sed -i 's/TCP_IN/#TCP_IN/g' /etc/csf/csf.conf && echo TCP_IN = "22,25,53,80,110,143,443,465,587,993,995,2078,2083,2087,2096" >> /etc/csf/csf.conf"""
-	subprocess.call([closeports], shell=True)
+	#Broken, will fix later.
+	#closeports = """sed -i 's/TCP_IN/#TCP_IN/g' /etc/csf/csf.conf && echo TCP_IN = "22,25,53,80,110,143,443,465,587,993,995,2078,2083,2087,2096" >> /etc/csf/csf.conf"""
+	#subprocess.call([closeports], shell=True)
 	subprocess.call([singlehopip], shell=True)
 	subprocess.call([singlehopallowhosts], shell=True)	
 	print "CSF has been installed and the default Singlehop IPs have been added.  \nPlease whitelist any additional IPs in /etc/hosts.allow manually.  \nIf you need to limit port access, modify /etc/csf/csf.conf"
-	print "We have also closed every other port besides:  22,25,53,80,110,143,443,465,587,993,995,2078,2083,2087,2096, please open ports manually if you need them"
-
 def fail2bansetup():
 	architecture = str(subprocess.call(["uname -p"], shell=True))
 	OS_version = str(subprocess.call(["cat /etc/redhat-release"], shell=True))
@@ -107,7 +106,7 @@ def tweak_settings():
 	subprocess.call([fixsmtpwarning], shell=True)
 	#Fix wget
 	#Still needs to be filled out.
-	fixwgeterror = "sed -i 's/wget//g' /etc/yum.conf && yum update wget"
+	fixwgeterror = "sed -i 's/wget//g' /etc/yum.conf && yum -y update wget"
 	subprocess.call([fixwgeterror], shell=True)
 #Change SSH port
 def ssh_change():
