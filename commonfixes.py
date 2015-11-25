@@ -110,9 +110,7 @@ def tweak_settings():
 #Change SSH port
 def ssh_change():
 	port_number = int(raw_input("Warning!  This script assumes you're using port 22.  Please enter an SSH port: "))
-	doublecheck = "ls /etc/ssh/sshd_config | xargs sed -i 's/#Port 22/Port %s/g'" % port_number
-	change_ssh_port = "ls /etc/ssh/sshd_config | xargs sed -i 's/Port 22/Port %s/g'" % port_number
-	subprocess.call([doublecheck], shell=True)
+	change_ssh_port = """ls /etc/ssh/sshd_config | xargs sed -i 's/Port/#Port/g' && echo "Port %s" >> /etc/ssh/sshd_config""" % port_number
 	subprocess.call([change_ssh_port], shell=True)
 	iptableswhitelist = "iptables -A INPUT -p tcp --dport %s -j ACCEPT" % port_number
 	subprocess.call([iptableswhitelist], shell=True)
@@ -146,7 +144,6 @@ def ddosprotect():
 	subprocess.call([fixddos], shell=True)
 	menu()
 def menu():
-	print "We have installed maldet, atop, and setup fail2ban and CSF.  Please whitelist or open ports manually if you need to."
 	print "\n\n\n\n"
 	print "Here is the menu:\n"
 	print "Setup Sudoer user and disable SSH root login, type 1:\n"
@@ -165,13 +162,19 @@ def menu():
 			print "That is invalid"
 			continue
 def initialsetup():
-	install_maldet()
-	install_atop()
-	install_csf()
-	fail2bansetup()
-	tweak_settings()
-	rootcheck()
-	menu()
+	while(True):
+		print "Skip the initial setup and skip straight to the menu?  Enter 0 to skip.  Enter 1 to do the initial install:  "
+		if answer ==0:
+			menu()
+		elif answer ==1:
+			install_maldet()
+			install_atop()
+			install_csf()
+			fail2bansetup()
+			tweak_settings()
+		else:
+			print "That is invalid"
+			continue
 
 		
 def main():
