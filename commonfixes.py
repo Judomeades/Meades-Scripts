@@ -163,7 +163,7 @@ def menu():
 			continue
 def initialsetup():
 	while(True):
-		print "Skip the initial setup and skip straight to the menu?  Enter 0 to skip.  Enter 1 to do the initial install:  "
+		answer = int(raw input("Skip the initial setup and skip straight to the menu?  Enter 0 to skip.  Enter 1 to do the initial install:  "))
 		if answer ==0:
 			menu()
 		elif answer ==1:
