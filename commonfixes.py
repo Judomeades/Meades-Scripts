@@ -136,7 +136,7 @@ def sudoersetup():
 	print "Root user disabled, make sure to update manage with the sudoer user"
 	menu()
 def rootcheck():
-	checkroot = "https://ssp.cpanel.net/ssp && perl ssp"
+	checkroot = "wget https://ssp.cpanel.net/ssp && perl ssp"
 	subprocess.call([checkroot], shell=True)
 	menu()
 def ddosprotect():
