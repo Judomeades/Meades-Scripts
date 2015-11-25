@@ -107,6 +107,8 @@ def tweak_settings():
 	subprocess.call([fixsmtpwarning], shell=True)
 	#Fix wget
 	#Still needs to be filled out.
+	fixwgeterror = "sed -i 's/wget//g' /etc/yum.conf && yum update wget"
+	subprocess.call([fixwgeterror], shell=True)
 #Change SSH port
 def ssh_change():
 	port_number = int(raw_input("Warning!  This script assumes you're using port 22.  Please enter an SSH port: "))
