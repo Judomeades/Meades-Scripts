@@ -156,14 +156,13 @@ def menu():
 		elif answer ==2:
 			ssh_change()
 		elif answer ==3:
-			rootcheck()
-			
+			rootcheck()	
 		else:
 			print "That is invalid"
 			continue
 def initialsetup():
 	while(True):
-		firstanswer = int(raw_input("Enter 0 to skip the initial setup.  Enter 1 to do the initial install:  "))
+		firstanswer = int(raw_input("Enter 0 to skip the initial setup.  Enter 1 to do the initial install: "))
 		if firstanswer ==0:
 			menu()
 		elif firstanswer ==1:
