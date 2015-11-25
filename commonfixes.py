@@ -163,10 +163,10 @@ def menu():
 			continue
 def initialsetup():
 	while(True):
-		answer = int(raw input("Skip the initial setup and skip straight to the menu?  Enter 0 to skip.  Enter 1 to do the initial install:  "))
-		if answer ==0:
+		firstanswer = int(raw input("Enter 0 to skip the initial setup.  Enter 1 to do the initial install:  "))
+		if firstanswer ==0:
 			menu()
-		elif answer ==1:
+		elif firstanswer ==1:
 			install_maldet()
 			install_atop()
 			install_csf()
