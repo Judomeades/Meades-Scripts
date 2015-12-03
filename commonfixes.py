@@ -46,7 +46,7 @@ def install_csf():
 	singlehopallowhosts = "%s %s %s; %s %s %s; %s %s %s; %s %s %s; %s %s %s; %s %s %s;" % (echo, IP1, allow, echo, IP2, allow, echo, IP3, allow, echo, IP4, allow, echo, IP5, allow, echo, IP6, allow)
 	#Broken, will fix later.
 	#opens mysql port for us only
-	#mysqlopen = "echo tcp:in:d=3306=127.0.0.1 /etc/csf/csf.allow && echo tcp:in:d=3306=216.104.45.109 /etc/csf/csf.allow"
+	#mysqlopen = "echo 'mysql: 127.0.0.1: allow' >> /etc/hosts.allow && echo 'mysql: 216.104.45.109: allow' >> /etc/hosts.allow && echo 'mysql: ALL: deny' >> /etc/hosts.allow"
 	#closeports = """sed -i 's/TCP_IN/#TCP_IN/g' /etc/csf/csf.conf && echo TCP_IN = "22,25,53,80,110,143,443,465,587,993,995,2078,2083,2087,2096" >> /etc/csf/csf.conf"""
 	#subprocess.call([closeports], shell=True)
 	subprocess.call([singlehopip], shell=True)
