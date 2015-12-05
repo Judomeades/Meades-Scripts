@@ -46,6 +46,7 @@ def install_csf():
 	mysqlopen = "echo 'mysql: 127.0.0.1: allow' >> /etc/hosts.allow && echo 'mysql: 216.104.45.109: allow' >> /etc/hosts.allow && echo 'mysql: ALL: deny' >> /etc/hosts.allow"
 	#Opens only the specified ports in the firewall
 	closeports = """sed -i '0,/^\(TCP_IN\).*/s//\TCP_IN = "22,25,53,80,110,143,443,465,587,993,995,2078,2083,2087,2096"/' /etc/csf/csf.conf"""
+	subprocess.call([mysqlopen], shell=True)
 	subprocess.call([closeports], shell=True)
 	subprocess.call([singlehopip], shell=True)
 	subprocess.call([singlehopallowhosts], shell=True)	
@@ -98,15 +99,30 @@ def fail2bansetup():
 
 #tweak settings in WHM
 def tweak_settings():
-	#allow for subdomains
-	allow_subdomains = "ls /var/cpanel/cpanel.config | xargs sed -i 's/allowparkhostnamedomainsubdomains=0/allowparkhostnamedomainsubdomains=1/g'"
+	#allow for subdomains to park
+	allow_subdomains = "sed -i 's/allowparkhostnamedomainsubdomains=0/allowparkhostnamedomainsubdomains=1/g' /var/cpanel/cpanel.config"
 	subprocess.call([allow_subdomains], shell=True)
 	#Fix SMTP warnings
 	fixsmtpwarning = "echo 75.126.231.82 >> /etc/trustedmailhosts && echo 75.126.231.82 >> /etc/skipsmtpcheckhosts"
 	subprocess.call([fixsmtpwarning], shell=True)
-	#Fix wget
+	#Fix wget that causes cPanel update to fail
 	fixwgeterror = "sed -i 's/wget//g' /etc/yum.conf && yum -y update wget"
 	subprocess.call([fixwgeterror], shell=True)
+	#Disable CPHulk (With CSF, you honestly don't need CPHulk, and it will help reduce the amount of people that are blocked out of their own log ins as well.  Not to mention us gettinb blocked out too in CPHulk)
+	disable_cphulk = "rm -f /var/cpanel/hulkd/enabled"
+	subprocess.call([disable_cphulk], shell=True)
+	#Fix eximstats db from getting very large
+	fix_eximstats = "sed -i '0,/^\(exim_retention_days\).*/s//\exim_retention_days=1/' /var/cpanel/cpanel.config"
+	subprocess.call([fix_eximstats], shell=True)
+	#Analog has caused servers to go oom before, better to disable by default since most don't even use it
+	fix_analog = "sed -i 's/skipanalog=0/skipanalog=1/g' /var/cpanel/cpanel.config"
+	subprocess.call([fix_analog], shell=True)
+	#Enable SPF on newly created domains
+	fix_spf = "sed -i 's/create_account_spf=0/create_account_spf=1/g' /var/cpanel/cpanel.config"
+	subprocess.call([fix_spf], shell=True)
+	#Change max hourly emails per domain from unl to some number.  Leaving this commented out until we get some clarification on it.  By default, cPanel is also set to queue up and retry for delivery to 125% of the max hourly emails per hour to put into the queue.  After the 125%, they're discarded.
+	#max_emails_change = "sed -i '0,/^\(maxemailsperhour\).*/s//\maxemailsperhour=10000/' /var/cpanel/cpanel.config"
+	#subprocess.call([max_emails_change], shell=True)
 #Change SSH port
 def ssh_change():
 	port_number = int(raw_input("Warning!  This script assumes you're using port 22.  Please enter an SSH port: "))
