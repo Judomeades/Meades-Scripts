@@ -13,7 +13,7 @@
 #Run cPanel script to detect rooted servers
 #Update parked domains tweak setting to allow cPanel users to create subdomains
 #Remove wget from yum.conf if it exists and yum update wget
-#This script assumes that they're using port 22
+#Change SSH pThis script assumes that they're using port 22 for ssh
 #Fix SMTP nagios warnings
 # -*- coding: utf-8 -*-
 
@@ -31,7 +31,6 @@ def install_csf():
 	csf = """wget http://www.configserver.com/free/csf.tgz && tar -xvf csf.tgz; cd csf && sh install.sh && ls /etc/csf/csf.conf | xargs sed -i 's/TESTING = "1"/TESTING = "0"/g' && csf -r"""
 	print "Installing CSF"
 	subprocess.call([csf], shell=True)
-##Deny ALL sshd: ALL : deny
 	IP1 = "216.104.45.109"
 	IP2 = "199.30.197.140"
 	IP3 = "10.32.201.8"
@@ -41,10 +40,8 @@ def install_csf():
 	csf = "csf -a "
 	echo = "echo sshd: "
 	allow = ">> /etc/hosts.allow"
-	deny = "echo sshd ALL >> /etc/hosts.deny"
 	singlehopip = "%s %s; %s %s; %s %s; %s %s; %s %s; %s %s" % (csf, IP1, csf, IP2, csf, IP3, csf, IP4, csf, IP5, csf, IP6)
 	singlehopallowhosts = "%s %s %s; %s %s %s; %s %s %s; %s %s %s; %s %s %s; %s %s %s;" % (echo, IP1, allow, echo, IP2, allow, echo, IP3, allow, echo, IP4, allow, echo, IP5, allow, echo, IP6, allow)
-	#Broken, will fix later.
 	#opens mysql port for us and localhost only
 	mysqlopen = "echo 'mysql: 127.0.0.1: allow' >> /etc/hosts.allow && echo 'mysql: 216.104.45.109: allow' >> /etc/hosts.allow && echo 'mysql: ALL: deny' >> /etc/hosts.allow"
 	#Opens only the specified ports in the firewall
@@ -108,13 +105,13 @@ def tweak_settings():
 	fixsmtpwarning = "echo 75.126.231.82 >> /etc/trustedmailhosts && echo 75.126.231.82 >> /etc/skipsmtpcheckhosts"
 	subprocess.call([fixsmtpwarning], shell=True)
 	#Fix wget
-	#Still needs to be filled out.
 	fixwgeterror = "sed -i 's/wget//g' /etc/yum.conf && yum -y update wget"
 	subprocess.call([fixwgeterror], shell=True)
 #Change SSH port
 def ssh_change():
 	port_number = int(raw_input("Warning!  This script assumes you're using port 22.  Please enter an SSH port: "))
-	change_ssh_port = """ls /etc/ssh/sshd_config | xargs sed -i 's/Port/#Port/g' && echo "Port %s" >> /etc/ssh/sshd_config""" % port_number
+	change_ssh_port = """sed -i '0,/^\(Port\).*/s//\Port %s/' /etc/ssh/sshd_config""" % port_number
+	#change_ssh_port = """ls /etc/ssh/sshd_config | xargs sed -i 's/Port/#Port/g' && echo "Port %s" >> /etc/ssh/sshd_config""" % port_number
 	subprocess.call([change_ssh_port], shell=True)
 	iptableswhitelist = "iptables -A INPUT -p tcp --dport %s -j ACCEPT" % port_number
 	subprocess.call([iptableswhitelist], shell=True)
