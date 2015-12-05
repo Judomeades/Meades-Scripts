@@ -45,10 +45,11 @@ def install_csf():
 	singlehopip = "%s %s; %s %s; %s %s; %s %s; %s %s; %s %s" % (csf, IP1, csf, IP2, csf, IP3, csf, IP4, csf, IP5, csf, IP6)
 	singlehopallowhosts = "%s %s %s; %s %s %s; %s %s %s; %s %s %s; %s %s %s; %s %s %s;" % (echo, IP1, allow, echo, IP2, allow, echo, IP3, allow, echo, IP4, allow, echo, IP5, allow, echo, IP6, allow)
 	#Broken, will fix later.
-	#opens mysql port for us only
-	#mysqlopen = "echo 'mysql: 127.0.0.1: allow' >> /etc/hosts.allow && echo 'mysql: 216.104.45.109: allow' >> /etc/hosts.allow && echo 'mysql: ALL: deny' >> /etc/hosts.allow"
-	#closeports = """sed -i 's/TCP_IN/#TCP_IN/g' /etc/csf/csf.conf && echo TCP_IN = "22,25,53,80,110,143,443,465,587,993,995,2078,2083,2087,2096" >> /etc/csf/csf.conf"""
-	#subprocess.call([closeports], shell=True)
+	#opens mysql port for us and localhost only
+	mysqlopen = "echo 'mysql: 127.0.0.1: allow' >> /etc/hosts.allow && echo 'mysql: 216.104.45.109: allow' >> /etc/hosts.allow && echo 'mysql: ALL: deny' >> /etc/hosts.allow"
+	#Opens only the specified ports in the firewall
+	closeports = """sed -i '0,/^\(TCP_IN\).*/s//\TCP_IN = "22,25,53,80,110,143,443,465,587,993,995,2078,2083,2087,2096"/' /etc/csf/csf.conf"""
+	subprocess.call([closeports], shell=True)
 	subprocess.call([singlehopip], shell=True)
 	subprocess.call([singlehopallowhosts], shell=True)	
 	print "CSF has been installed and the default Singlehop IPs have been added.  \nPlease whitelist any additional IPs in /etc/hosts.allow manually.  \nIf you need to limit port access, modify /etc/csf/csf.conf"
