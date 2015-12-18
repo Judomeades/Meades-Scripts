@@ -162,7 +162,6 @@ def ddosprotect():
 	menu()
 def ssh_key_setup():
 	#Setup SSH keys
-	subprocess.call([create_key], shell=True)
 	#Ask for sudoer
 	key_user = raw_input("echo 'Enter the user you want to create the SSH key for.  DO NOT USE ROOT.  Use the sudoer.  If you haven't set one up, cancel the script and make one:  '")
 	#Create the key
