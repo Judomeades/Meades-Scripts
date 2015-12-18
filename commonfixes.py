@@ -194,7 +194,7 @@ def menu():
 		elif answer ==2:
 			ssh_change()
 		elif answer ==3:
-			ssh_key_setup():
+			ssh_key_setup()
 		else:
 			print "That is invalid"
 			continue
