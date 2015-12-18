@@ -160,12 +160,33 @@ def ddosprotect():
 	fixddos = """iptables -A INPUT -j ACCEPT -p tcp --dport 80 -m state --state NEW -m limit --limit 40/s --limit-burst 5 -m comment --comment 'Allow incoming HTTP' && iptables -A INPUT -j ACCEPT -p tcp --dport 443 -m state --state NEW -m limit --limit 40/s --limit-burst 5 -m comment --comment 'Allow incoming HTTPS' && iptables -A INPUT -i lo -j ACCEPT && iptables -A INPUT -j ACCEPT -m state --state RELATED,ESTABLISHED -m limit --limit 100/s --limit-burst 50 && iptables -A INPUT -j REJECT && iptables-save"""
 	subprocess.call([fixddos], shell=True)
 	menu()
+def ssh_key_setup():
+	#Setup SSH keys
+	subprocess.call([create_key], shell=True)
+	#Ask for sudoer
+	key_user = raw_input("echo 'Enter the user you want to create the SSH key for.  DO NOT USE ROOT.  Use the sudoer.  If you haven't set one up, cancel the script and make one:  '")
+	#Create the key
+	create_key = "su %s; cd /home/%s; ssh-keygen -f file.rsa -t rsa -N ''" % key_user
+	#Authorize the key
+	setup_key = "mkdir .ssh; mv file.rsa.pub .ssh; mv file.rsa .ssh/; cat .ssh/file.rsa.pub >> .ssh/authorized_keys; chmod 700 .ssh; chmod 640 .ssh/authorized_keys; cat .ssh/file.rsa"
+	#Disable password auth
+	disablepassauth = "sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config && service sshd restart"
+	message = "Please copy the private key and store it in manage.  Put in the root password at the prompt to su back to root"
+	su_to_root = "su"
+	subprocess.call([create_key], shell=True)
+	subprocess.call([setup_key], shell=True)
+	subprocess.call([message], shell=True)
+	subprocess.call([su_to_root], shell=True)
+	subprocess.call([disablepassauth], shell=True)
+	menu()
+	
+	
 def menu():
 	print "\n\n\n\n"
 	print "Here is the menu:\n"
 	print "Setup Sudoer user and disable SSH root login, type 1:\n"
 	print "Change the SSH port, type 2:\n"
-	print "Check for rooted server, this script is from cPanel, type 3:\n"
+	print "Setup SSH keys for a sudoer user, type 3:\n"
 	while(True):
 		answer = int(raw_input("Please enter a number: "))
 		if answer ==1:
@@ -173,7 +194,7 @@ def menu():
 		elif answer ==2:
 			ssh_change()
 		elif answer ==3:
-			rootcheck()	
+			ssh_key_setup():
 		else:
 			print "That is invalid"
 			continue
