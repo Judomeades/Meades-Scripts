@@ -133,13 +133,14 @@ def tweak_settings():
 	#subprocess.call([max_emails_change], shell=True)
 #Change SSH port
 def ssh_change():
-	port_number = int(raw_input("Warning!  This script assumes you're using port 22.  Please enter an SSH port: "))
+	port_number = int(raw_input("Please enter The SSH port you want to use: "))
+	#old_port = int(subprocess.call(["grep Port /etc/ssh/sshd_config|grep -v Gateway|awk '{print $2}'"], shell=True))
+	old_port = int(raw_input("Please enter the current SSH port: "))
 	change_ssh_port = """sed -i 's/#Port/Port/g' /etc/ssh/sshd_config && sed -i '0,/^\(Port\).*/s//\Port %s/' /etc/ssh/sshd_config""" % port_number
-	#change_ssh_port = """ls /etc/ssh/sshd_config | xargs sed -i 's/Port/#Port/g' && echo "Port %s" >> /etc/ssh/sshd_config""" % port_number
 	subprocess.call([change_ssh_port], shell=True)
-	iptableswhitelist = "iptables -A INPUT -p tcp --dport %s -j ACCEPT" % port_number
+	iptableswhitelist = "iptables -A INPUT -p tcp --dport %s -j ACCEPT && iptables-save" % port_number
 	subprocess.call([iptableswhitelist], shell=True)
-	allowincsf = "sed -i '0,/22/ s/22/%s/' /etc/csf/csf.conf" % port_number
+	allowincsf = "sed -i 0,/%s/{s/%s/%s/} /etc/csf/csf.conf && csf -r" % (old_port, old_port, port_number)
 	subprocess.call([allowincsf], shell=True)
 	restartssh = "service sshd restart"
 	subprocess.call([restartssh], shell=True)
@@ -195,15 +196,16 @@ def menu():
 			continue
 def initialsetup():
 	while(True):
-		firstanswer = int(raw_input("Enter 0 to skip the initial setup.  Enter 1 to do the initial install: "))
+		firstanswer = int(raw_input("This script is only fully compatible with CentOS 5 or 6 with cPanel.  Here's what this script will do\nOn Initial Install:\n\tInstall maldet\n\tInstall atop\n\tInstall CSF and disable unnecessary ports and only allow mysql through localhost and the singlehop IP\n\tInstall fail2ban/automatic updates\n\tSetup IPtables rules for DDoS.\n\tSeveral tweaks that are cPanel specific\nThe next section will let you perform several security options.\n\tChange SSH port.  This script does assume you're using 22.\n\tCreate sudoer user and disable direct root log in.\n\tSetup SSH keys for sudoer user and disable password authentication\nSometime during the initial install you'll be asked for an email address, give the main address for the client.\nEnter 0 to do the initial setup. Enter 1 to skip the initial install: "))
 		if firstanswer ==0:
-			menu()
-		elif firstanswer ==1:
 			install_maldet()
 			install_atop()
 			install_csf()
 			fail2bansetup()
+			ddosprotect()
 			tweak_settings()
+		elif firstanswer ==1:
+			menu()
 		else:
 			print "That is invalid"
 			continue
