@@ -134,7 +134,8 @@ def tweak_settings():
 #Change SSH port
 def ssh_change():
 	port_number = int(raw_input("Warning!  This script assumes you're using port 22.  Please enter an SSH port: "))
-	change_ssh_port = """sed -i '0,/^\(Port\).*/s//\Port %s/' /etc/ssh/sshd_config""" % port_number
+	
+	change_ssh_port = """sed -i 's/#Port/Port/g' /etc/ssh/sshd_config && sed -i '0,/^\(Port\).*/s//\Port %s/' /etc/ssh/sshd_config""" % port_number
 	#change_ssh_port = """ls /etc/ssh/sshd_config | xargs sed -i 's/Port/#Port/g' && echo "Port %s" >> /etc/ssh/sshd_config""" % port_number
 	subprocess.call([change_ssh_port], shell=True)
 	iptableswhitelist = "iptables -A INPUT -p tcp --dport %s -j ACCEPT" % port_number
