@@ -13,8 +13,9 @@
 #Run cPanel script to detect rooted servers
 #Update parked domains tweak setting to allow cPanel users to create subdomains
 #Remove wget from yum.conf if it exists and yum update wget
-#Change SSH pThis script assumes that they're using port 22 for ssh
+#Change SSH port.  This script assumes that they're using port 22 for ssh
 #Fix SMTP nagios warnings
+#Setup SSH keys for sudoer user and disable password auth
 # -*- coding: utf-8 -*-
 
 import subprocess
@@ -163,22 +164,19 @@ def ddosprotect():
 def ssh_key_setup():
 	#Setup SSH keys
 	#Ask for sudoer
-	key_user = raw_input("echo 'Enter the user you want to create the SSH key for.  DO NOT USE ROOT.  Use the sudoer.  If you haven't set one up, cancel the script and make one:  '")
+	key_user = raw_input("Enter the user you want to create the SSH key for.  DO NOT USE ROOT.  Use the sudoer.  If you haven't set one up, cancel the script and make one:  ")
 	#Create the key
-	create_key = "su %s; cd /home/%s; ssh-keygen -f file.rsa -t rsa -N ''" % key_user
+	create_key = """runuser -l %s -c "ssh-keygen -f file.rsa -t rsa -N ''" """	% key_user
 	#Authorize the key
-	setup_key = "mkdir .ssh; mv file.rsa.pub .ssh; mv file.rsa .ssh/; cat .ssh/file.rsa.pub >> .ssh/authorized_keys; chmod 700 .ssh; chmod 640 .ssh/authorized_keys; cat .ssh/file.rsa"
+	setup_key = "cd /home/%s/ && mkdir .ssh && mv file.rsa.pub .ssh && mv file.rsa .ssh/ && cat .ssh/file.rsa.pub >> .ssh/authorized_keys && chmod 700 .ssh && chmod 640 .ssh/authorized_keys && chown -R %s:%s .ssh && cat .ssh/file.rsa" % (key_user, key_user, key_user)
 	#Disable password auth
-	disablepassauth = "sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config && service sshd restart"
-	message = "Please copy the private key and store it in manage.  Put in the root password at the prompt to su back to root"
-	su_to_root = "su"
+	disablepassauth = "sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config && sed -i 's/ChallengeResponseAuthentication yes/ChallengeResponseAuthentication no/g' /etc/ssh/sshd_config && service sshd restart"
+	message = "echo 'Please copy the private key and store it in manage.'"
 	subprocess.call([create_key], shell=True)
 	subprocess.call([setup_key], shell=True)
 	subprocess.call([message], shell=True)
-	subprocess.call([su_to_root], shell=True)
 	subprocess.call([disablepassauth], shell=True)
 	menu()
-	
 	
 def menu():
 	print "\n\n\n\n"
