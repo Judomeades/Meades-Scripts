@@ -2,20 +2,25 @@
 #Author:  Mitchell Eades
 #!/usr/bin/env python
 #Will only work on cPanel+ centOS 5 and 6
+#This first section is assuming you've never run the script before, you have the option to skip it during the prompt
 #Install maldet
-#Install CSF and disable unnecessary ports
 #Install atop
+#Install CSF and disable unnecessary ports and only allow mysql through localhost and us
 #Install fail2ban/automatic updates
-#change SSH port
-#create sudoer user
-#Disable direct root log ins
-#Only allow mysql through localhost
-#Run cPanel script to detect rooted servers
-#Update parked domains tweak setting to allow cPanel users to create subdomains
-#Remove wget from yum.conf if it exists and yum update wget
-#Change SSH port.  This script assumes that they're using port 22 for ssh
-#Fix SMTP nagios warnings
-#Setup SSH keys for sudoer user and disable password auth
+#IPtables rules that will help mitigate DDoS.  It's working, but I haven't enabled it yet.
+#Several tweaks that are cPanel specific that will help
+	#Allow for subdomain creation (off by default)
+	#Fix SMTP warning state by adding nagios IP
+	#Remove wget from yum.conf if it exists and yum update wget
+	#Disable CPHulk since all of the other security measures should cover everything this does.  
+	#Fix eximstats DB.  Only retain 1 day worth of info.  It's usually set to 30, and can grow gigantic.  Largest I've seen is 400GB+!
+	#Disable Analog stats.  Nobody uses it, and it's caused a few servers to go out of memory.  
+	#Make sure SPF is checked so that it's created on all new domains.
+	#Not sure if this is going to be implemented, it's disabled for now.- But set max hourly emails per domain.  This could reduce the amount of spam that is sent out and it would be brought to the attention of the client much more quickly.
+#This next section is split into parts, you can do any/all/none of these next steps if you want.
+	#Change SSH port.  This script does assume you're using 22.
+	#Create sudoer user and disable direct root log ins
+	#Setup SSH keys for sudoer user and disable password authentication
 # -*- coding: utf-8 -*-
 
 import subprocess
@@ -45,7 +50,7 @@ def install_csf():
 	singlehopallowhosts = "%s %s %s; %s %s %s; %s %s %s; %s %s %s; %s %s %s; %s %s %s;" % (echo, IP1, allow, echo, IP2, allow, echo, IP3, allow, echo, IP4, allow, echo, IP5, allow, echo, IP6, allow)
 	#opens mysql port for us and localhost only
 	mysqlopen = "echo 'mysql: 127.0.0.1: allow' >> /etc/hosts.allow && echo 'mysql: 216.104.45.109: allow' >> /etc/hosts.allow && echo 'mysql: ALL: deny' >> /etc/hosts.allow"
-	#Opens only the specified ports in the firewall
+	#Opens only the specified ports in the firewall, these can be changed if we need more/less ports open
 	closeports = """sed -i '0,/^\(TCP_IN\).*/s//\TCP_IN = "22,25,53,80,110,143,443,465,587,993,995,2078,2083,2087,2096"/' /etc/csf/csf.conf"""
 	subprocess.call([mysqlopen], shell=True)
 	subprocess.call([closeports], shell=True)
@@ -63,14 +68,12 @@ def fail2bansetup():
 		OS_version = "6"
 	else:
 		OS_verison = "5"
-
 	#fail2ban
 	fail2ban_centos_6_64bit = "rpm -Uvh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
 	fail2ban_centos_6_32bit = "rpm -Uvh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
 	fail2ban_centos_5_64bit = "rpm -Uvh http://dl.fedoraproject.org/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm"
 	fail2ban_centos_5_32bit = "rpm -Uvh http://dl.fedoraproject.org/pub/epel/5/i386/epel-release-5-4.noarch.rpm"
 	install_fail2ban = "yum -y install fail2ban"
-	
 	if architecture=="x86_64" and OS_version=="6":
 		subprocess.call([fail2ban_centos_6_64bit], shell=True)
 		subprocess.call([install_fail2ban], shell=True)
@@ -97,7 +100,11 @@ def fail2bansetup():
 		print "Still waiting on a CentOS 5 install to confirm instructions"
 	else:
 		print "Unsupported OS version, please install yumupdatesd or yum-cron manually"
-
+#Setup IPtables rules to help mitigate DDoS
+def ddosprotect():
+	fixddos = """iptables -A INPUT -j ACCEPT -p tcp --dport 80 -m state --state NEW -m limit --limit 40/s --limit-burst 5 -m comment --comment 'Allow incoming HTTP' && iptables -A INPUT -j ACCEPT -p tcp --dport 443 -m state --state NEW -m limit --limit 40/s --limit-burst 5 -m comment --comment 'Allow incoming HTTPS' && iptables -A INPUT -i lo -j ACCEPT && iptables -A INPUT -j ACCEPT -m state --state RELATED,ESTABLISHED -m limit --limit 100/s --limit-burst 50 && iptables -A INPUT -j REJECT && iptables-save"""
+	subprocess.call([fixddos], shell=True)
+	menu()	
 #tweak settings in WHM
 def tweak_settings():
 	#allow for subdomains to park
@@ -153,14 +160,6 @@ def sudoersetup():
 	subprocess.call([disableroot], shell=True)
 	print "Root user disabled, make sure to update manage with the sudoer user"
 	menu()
-def rootcheck():
-	checkroot = "wget https://ssp.cpanel.net/ssp && perl ssp"
-	subprocess.call([checkroot], shell=True)
-	menu()
-def ddosprotect():
-	fixddos = """iptables -A INPUT -j ACCEPT -p tcp --dport 80 -m state --state NEW -m limit --limit 40/s --limit-burst 5 -m comment --comment 'Allow incoming HTTP' && iptables -A INPUT -j ACCEPT -p tcp --dport 443 -m state --state NEW -m limit --limit 40/s --limit-burst 5 -m comment --comment 'Allow incoming HTTPS' && iptables -A INPUT -i lo -j ACCEPT && iptables -A INPUT -j ACCEPT -m state --state RELATED,ESTABLISHED -m limit --limit 100/s --limit-burst 50 && iptables -A INPUT -j REJECT && iptables-save"""
-	subprocess.call([fixddos], shell=True)
-	menu()
 def ssh_key_setup():
 	#Setup SSH keys
 	#Ask for sudoer
@@ -177,7 +176,6 @@ def ssh_key_setup():
 	subprocess.call([message], shell=True)
 	subprocess.call([disablepassauth], shell=True)
 	menu()
-	
 def menu():
 	print "\n\n\n\n"
 	print "Here is the menu:\n"
@@ -209,8 +207,6 @@ def initialsetup():
 		else:
 			print "That is invalid"
 			continue
-
-		
 def main():
 	initialsetup()
 	
