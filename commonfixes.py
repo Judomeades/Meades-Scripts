@@ -18,7 +18,7 @@
 	#Make sure SPF is checked so that it's created on all new domains.
 	#Not sure if this is going to be implemented, it's disabled for now.- But set max hourly emails per domain.  This could reduce the amount of spam that is sent out and it would be brought to the attention of the client much more quickly.
 #This next section is split into parts, you can do any/all/none of these next steps if you want.
-	#Change SSH port.  This script does assume you're using 22.
+	#Change SSH port
 	#Create sudoer user and disable direct root log ins
 	#Setup SSH keys for sudoer user and disable password authentication
 # -*- coding: utf-8 -*-
@@ -195,7 +195,7 @@ def menu():
 			continue
 def initialsetup():
 	while(True):
-		firstanswer = int(raw_input("This script is only fully compatible with CentOS 5 or 6 with cPanel.  Here's what this script will do\nOn Initial Install:\n\tInstall maldet\n\tInstall atop\n\tInstall CSF and disable unnecessary ports and only allow mysql through localhost and the singlehop IP\n\tInstall fail2ban/automatic updates\n\tSetup IPtables rules for DDoS.\n\tSeveral tweaks that are cPanel specific\nThe next section will let you perform several security options.\n\tChange SSH port.  This script does assume you're using 22.\n\tCreate sudoer user and disable direct root log in.\n\tSetup SSH keys for sudoer user and disable password authentication\nSometime during the initial install you'll be asked for an email address, give the main address for the client.\nEnter 0 to do the initial setup. Enter 1 to skip the initial install: "))
+		firstanswer = int(raw_input("This script is only fully compatible with CentOS 5 or 6 with cPanel.  Here's what this script will do\nOn Initial Install:\n\tInstall maldet\n\tInstall atop\n\tInstall CSF and disable unnecessary ports and only allow mysql through localhost and the singlehop IP\n\tInstall fail2ban/automatic updates\n\tSetup IPtables rules for DDoS.\n\tSeveral tweaks that are cPanel specific\nThe next section will let you perform several security options.\n\tChange SSH port.\n\tCreate sudoer user and disable direct root log in.\n\tSetup SSH keys for sudoer user and disable password authentication\nSometime during the initial install you'll be asked for an email address, give the main address for the client.\nEnter 0 to do the initial setup. Enter 1 to skip the initial install: "))
 		if firstanswer ==0:
 			install_maldet()
 			install_atop()
