@@ -133,8 +133,8 @@ def tweak_settings():
 	#subprocess.call([max_emails_change], shell=True)
 #Change SSH port
 def ssh_change():
-	port_number = int(raw_input("Please enter The SSH port you want to use: "))
 	old_port = int(raw_input("Please enter the current SSH port: "))
+	port_number = int(raw_input("Please enter the SSH port you want to use: "))
 	change_ssh_port = """sed -i 's/#Port/Port/g' /etc/ssh/sshd_config && sed -i '0,/^\(Port\).*/s//\Port %s/' /etc/ssh/sshd_config""" % port_number
 	subprocess.call([change_ssh_port], shell=True)
 	iptableswhitelist = "iptables -A INPUT -p tcp --dport %s -j ACCEPT && iptables-save" % port_number
