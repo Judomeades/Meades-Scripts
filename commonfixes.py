@@ -183,7 +183,7 @@ def menu():
 	print "Here is the menu:\n"
 	print "Setup Sudoer user and disable SSH root login, type 1:\n"
 	print "Change the SSH port, type 2:\n"
-	print "Setup SSH keys for a sudoer user, type 3:\n"
+	print "Setup SSH keys for a sudoer user and disable direct password authentication, type 3:\n"
 	while(True):
 		answer = int(raw_input("Please enter a number: "))
 		if answer ==1:
