@@ -6,7 +6,7 @@ import subprocess
 def main():
 	create_packages = "for i in `cat /etc/domainusers | cut -d: -f1`; do /scripts/pkgacct $i --skiphomedir; done"
 	make_directory = "mkdir /home/cpmovemigration"
-	move_cpmoves = "mv cpmove-* /home/cpmovemigration"
+	move_cpmoves = "mv /home/cpmove-* /home/cpmovemigration"
 	
 	subprocess.call([create_packages], shell=True)
 	subprocess.call([make_directory], shell=True)
