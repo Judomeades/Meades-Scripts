@@ -6,4 +6,8 @@
 import subprocess
 def main():
 	create_backups = "cp /etc/hosts /etc/hosts.dst && cp /etc/ips /etc/ips.dst && cp /etc/sysconfig/network /etc/sysconfig/network.dst && cp /var/cpanel/mainip /var/cpanel/mainip.dst"
+	swap_values = "echo 'Placeholder variable, nothing has been changed yet'"
+	Activate
+	subprocess.call([create_backups], shell=True)
+	subprocess.call([swap_values], shell=True)
 main()
