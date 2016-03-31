@@ -1,8 +1,6 @@
 #Make Backups IPs on DST
 #!/usr/bin/env python
-#This is going to be a bit tricky, but I think this could work, We would just need to manually move the IPs on the VLAN
-#This will be split into two scripts I think, this one will be run on DST
-#This is still pretty early stages of development
+#DONT USE THIS SCRIPT IT'S STILL BEING WORKED ON
 import subprocess
 def main():
 	ip = raw_input("Please enter the ip address of the source server: ")
