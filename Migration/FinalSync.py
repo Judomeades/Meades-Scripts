@@ -1,6 +1,7 @@
 #FinalSync
 #Sync Home directories/DBs before IP swap
 #!/usr/bin/env python
+#DON'T USE THIS SCRIPT, IT'S STILL IN DEVELOPMENT
 import subprocess
 
 def main():
