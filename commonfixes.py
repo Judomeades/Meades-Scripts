@@ -102,7 +102,7 @@ def fail2bansetup():
 		print "Unsupported OS version, please install yumupdatesd or yum-cron manually"
 #Setup IPtables rules to help mitigate DDoS
 def ddosprotect():
-	fixddos = """iptables -A INPUT -j ACCEPT -p tcp --dport 80 -m state --state NEW -m limit --limit 40/s --limit-burst 5 && iptables -A INPUT -j ACCEPT -p tcp --dport 443 -m state --state NEW -m limit --limit 40/s --limit-burst 5 && iptables -A INPUT -i lo -j ACCEPT && iptables -A INPUT -j ACCEPT -m state --state RELATED,ESTABLISHED -m limit --limit 100/s --limit-burst 50 && iptables -A INPUT -j REJECT && iptables-save"""
+	fixddos = """iptables -A INPUT -j ACCEPT -p tcp --dport 80 -m state --state NEW -m limit --limit 40/s --limit-burst 5 && iptables -A INPUT -j ACCEPT -p tcp --dport 443 -m state --state NEW -m limit --limit 40/s --limit-burst 5 && iptables-save"""
 	subprocess.call([fixddos], shell=True)
 	menu()	
 #tweak settings in WHM
