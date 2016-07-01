@@ -1,6 +1,7 @@
 #SyncPull
 #!/usr/bin/env python
 #This will be run on DST to pull packaged files over and restore them
+#sync_home_dirs has not been tested yet, so it is not being called in the script.  
 import subprocess
 def main():
 	ip = raw_input("Please enter the ip address of the source server: ")
