@@ -12,7 +12,7 @@ def main():
 	pulleabuild = "rsync -avI -e 'ssh -p%s' root@%s:/var/cpanel/easy/apache/profile/_last_success.yaml  /var/cpanel/easy/apache/profile/" % (ssh_port, ip)
 	pullcrontab = "rsync -avI -e 'ssh -p%s' root@%s:/etc/crontab /etc/" % (ssh_port, ip)
 	
-	runeasyapache = "/scripts/easyapache"
+	runeasyapache = "/scripts/easyapache --profile=/var/cpanel/easy/apache/profile/_last_success.yaml --build"
 	
 	subprocess.call([pullmysqlconf], shell=True)
 	subprocess.call([pullphpini], shell=True)
