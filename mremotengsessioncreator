@@ -2,7 +2,10 @@
 #This powershell script will take a file with the following format and create an xml compatible with mremoteng for SSH connections
 #IP:SSHport:hostname
 #Caveat for this, is that we either have to manually modify connections for ssh keys, or we have to always have a putty session saved.
-#YOU WILL NEED TO EDIT THE PATHS MANUALLY ON LINES 7, 135, and 262
+#YOU WILL NEED TO EDIT THE PATHS MANUALLY
+#You will also need to fill out the "protected" field as well.  Export a mremoteng session and edit the xml and you'll find hte protected ID.
+
+
 $filePath ="C:\Users\meades\Documents\testxml.xml" 
 $XmlWriter = New-Object System.XMl.XmlTextWriter($filePath,$Null)
 $xmlWriter.Formatting = 'Indented'
@@ -11,16 +14,8 @@ $xmlWriter.WriteStartDocument()
 $xmlWriter.WriteStartElement("Connections")  
 $XmlWriter.WriteAttributeString("Name","Connections")  
 $XmlWriter.WriteAttributeString("Export","True")
-$XmlWriter.WriteAttributeString("Protected","SaGeoWIOD5UpQJDO6ymcQ9bXjTvwt87ZOHZ7Kk8JZ64nt8z8ngMCd3qvK0VIAByd")
+#$XmlWriter.WriteAttributeString("Protected","SaGeoWIOD5UpQJDO6ymcQ9bXjTvwt87ZOHZ7Kk8JZ64nt8z8ngMCd3qvK0VIAByd")
 $XmlWriter.WriteAttributeString("ConfVersion","2.5")
-      # Write the Document  
-    #  $xmlWriter.WriteStartElement("Connections")  
-    #  $XmlWriter.WriteAttributeString("Name","Connections")  
-	#  $XmlWriter.WriteAttributeString("Export","True")
-	#  $XmlWriter.WriteAttributeString("Protected","SaGeoWIOD5UpQJDO6ymcQ9bXjTvwt87ZOHZ7Kk8JZ64nt8z8ngMCd3qvK0VIAByd")
-	#  $XmlWriter.WriteAttributeString("ConfVersion","2.5")
-    #  $XmlWriter.WriteEndElement()  
-           # Write the Document  
 $xmlWriter.WriteStartElement("Node")  
 $XmlWriter.WriteAttributeString("Name","Connections")  
 $xmlWriter.WriteAttributeString("Type","Container") 
