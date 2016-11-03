@@ -34,7 +34,7 @@ def install_atop():
 	subprocess.call([atop], shell=True)
 #Install CSF
 def install_csf():
-	csf = """wget http://www.configserver.com/free/csf.tgz && tar -xvf csf.tgz; cd csf && sh install.sh && ls /etc/csf/csf.conf | xargs sed -i 's/TESTING = "1"/TESTING = "0"/g' && csf -r"""
+	csf = """wget https://download.configserver.com/csf.tgz && tar -xvf csf.tgz; cd csf && sh install.sh && ls /etc/csf/csf.conf | xargs sed -i 's/TESTING = "1"/TESTING = "0"/g' && csf -r"""
 	print "Installing CSF"
 	subprocess.call([csf], shell=True)
 	IP1 = "216.104.45.109"
