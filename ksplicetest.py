@@ -21,7 +21,7 @@ if len(sys.argv) != 2:
     print "Usage: test-uptrack-support.py <access key>"
     sys.exit(2)
  
-accesskey=d0128d5f53f98a4a8798c44950183a875fe1cb512fcf786e4c1733c3b9cb2c22
+accesskey = "d0128d5f53f98a4a8798c44950183a875fe1cb512fcf786e4c1733c3b9cb2c22"
 keyurl = "https://updates.ksplice.com/update-repository/%s/status" % (urllib.quote(accesskey))
 try:
     data = urllib2.urlopen(keyurl).read()
