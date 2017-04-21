@@ -17,7 +17,7 @@ def Allow():
 	allow = ">> /etc/hosts.allow"
 	singlehopip = "%s %s; %s %s; %s %s; %s %s; %s %s; %s %s; %s %s; %s %s" % (csf, IP1, csf, IP2, csf, IP3, csf, IP4, csf, IP5, csf, IP6, csf, IP7, csf, IP8)
 	singlehopallowhosts = "%s %s %s; %s %s %s; %s %s %s; %s %s %s; %s %s %s; %s %s %s; %s %s %s; %s %s %s" % (echo, IP1, allow, echo, IP2, allow, echo, IP3, allow, echo, IP4, allow, echo, IP5, allow, echo, IP6, allow, echo, IP7, allow, echo, IP8, allow)
-	cat = "cat /etc/hosts.allow; echo 'If there's a deny all rule, modify manually"
+	cat = "cat /etc/hosts.allow; echo 'If there's a deny all rule for SSH, modify manually"
 	subprocess.call([singlehopip], shell=True)
 	subprocess.call([singlehopallowhosts], shell=True) 
 	subprocess.call([cat], shell=True)
