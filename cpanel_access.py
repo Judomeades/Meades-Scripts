@@ -21,3 +21,4 @@ def Allow():
 	subprocess.call([cat], shell=True)
 def main():
 	Allow()
+main()
